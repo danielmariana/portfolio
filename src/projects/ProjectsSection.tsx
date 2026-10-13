@@ -179,7 +179,10 @@ export function ProjectsSection() {
 
   return (
     <section className="relative">
-      <div className="bg-white px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
+      <div
+        id="projetos"
+        className="scroll-mt-24 bg-white px-5 py-10 sm:scroll-mt-28 sm:px-8 sm:py-14 lg:scroll-mt-32 lg:px-12 lg:py-16"
+      >
         <h2 className="text-xl font-bold text-[#121111] sm:text-2xl lg:text-3xl">Projetos</h2>
       </div>
       {projects.map((project, index) => (
