@@ -92,7 +92,7 @@ export function ScrollIndicator({ count }: { count: number }) {
         className="fixed inset-x-0 z-20 flex justify-center sm:hidden"
         style={{ bottom: 'calc(16px + env(safe-area-inset-bottom))' }}
       >
-        <div className="flex items-center gap-2 rounded-lg bg-[#F2F2F2]/30 px-2 py-1.5 shadow-md backdrop-blur-[6px]">
+        <div className="flex items-center gap-2.5 rounded-lg bg-[#F2F2F2]/30 px-2.5 py-2 shadow-md backdrop-blur-[6px]">
           {dots.map((i) => (
             <button
               key={i}
@@ -100,7 +100,7 @@ export function ScrollIndicator({ count }: { count: number }) {
               aria-label={`Ir para a seção ${i + 1}`}
               aria-current={active === i}
               onClick={() => goTo(i)}
-              className={`h-1.5 w-1.5 cursor-pointer rounded-full transition-colors ${
+              className={`h-2 w-2 cursor-pointer rounded-full transition-colors ${
                 active === i ? 'bg-[#121111]' : 'bg-white/40'
               }`}
             />

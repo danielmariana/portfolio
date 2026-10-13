@@ -5,14 +5,14 @@ import { projects, type Project } from './data'
 
 const MotionLink = motion.create(Link)
 const TOP_OFFSET = 16
-const MIN_ICON_GAP = 24
+const MIN_ICON_GAP = 30
+const CORNER_RADIUS = 60
+// The rise finishes within this fraction of the next card's reveal progress, instead
+// of the full 0→1 span — otherwise the incoming card's covering edge (which sweeps the
+// whole viewport) catches up to the text before it reaches MIN_ICON_GAP, covering it
+// mid-rise rather than letting it settle there first.
+const RISE_COMPLETE_AT = 0.3
 
-// Height of the sticky section title bar above the cards — kept in sync between the
-// bar itself and each card's sticky offset/height so the white strip never gets covered.
-const TITLE_BAR_CLASS = 'h-[160px] sm:h-[168px] lg:h-[185px]'
-const TITLE_BAR_TOP_CLASS = 'top-[160px] sm:top-[168px] lg:top-[185px]'
-const CARD_HEIGHT_CLASS =
-  'h-[calc(100svh-160px)] sm:h-[calc(100svh-168px)] lg:h-[calc(100svh-185px)]'
 const TAG_DARKEN_AMOUNT = 0.16
 
 function darkenHex(hex: string, amount: number) {
@@ -48,8 +48,8 @@ function ArrowIcon({ className }: { className?: string }) {
         d="M5 12h14M13 6l6 6-6 6"
         stroke="currentColor"
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
     </svg>
   )
@@ -82,6 +82,15 @@ function ProjectCard({
     offset: ['start end', 'start start'],
   })
 
+  // This card's own entrance: 0 while it's still below the viewport rising into
+  // place, 1 once it settles stuck at the top — corners flatten out over that span,
+  // since a corner only reads as "rounded" while there's a reveal happening.
+  const { scrollYProgress: ownReveal } = useScroll({
+    target: cardRef,
+    offset: ['start end', 'start start'],
+  })
+  const cornerRadius = useTransform(ownReveal, [0, 1], [CORNER_RADIUS, 0])
+
   useEffect(() => {
     function measure() {
       if (nextReveal.get() > 0.01) return
@@ -98,20 +107,27 @@ function ProjectCard({
     return () => window.removeEventListener('resize', measure)
   }, [nextReveal])
 
-  const contentY = useTransform(nextReveal, (p) => -riseDistanceRef.current * p)
+  const contentY = useTransform(nextReveal, (p) => {
+    const t = Math.min(p / RISE_COMPLETE_AT, 1)
+    return -riseDistanceRef.current * t
+  })
 
   return (
     <div
       ref={cardRef}
       data-scroll-section={index + 1}
-      className={`sticky ${TITLE_BAR_TOP_CLASS} ${CARD_HEIGHT_CLASS}`}
+      className="sticky top-0 h-svh"
       style={{ zIndex: index + 1 }}
     >
       <MotionLink
         ref={boxRef}
         to={`/projetos/${project.slug}`}
-        style={{ backgroundColor: project.color }}
-        className="flex h-full w-full flex-col rounded-t-[60px] px-5 pt-6 pb-6 sm:px-8 sm:pt-8 sm:pb-8 lg:px-12 lg:pt-10 lg:pb-10"
+        style={{
+          backgroundColor: project.color,
+          borderTopLeftRadius: cornerRadius,
+          borderTopRightRadius: cornerRadius,
+        }}
+        className="flex h-full w-full flex-col px-5 pt-20 pb-6 sm:px-8 sm:pt-24 sm:pb-8 lg:px-12 lg:pt-28 lg:pb-10"
       >
         <MaterialIcon
           ref={iconRef}
@@ -163,9 +179,7 @@ export function ProjectsSection() {
 
   return (
     <section className="relative">
-      <div
-        className={`sticky top-0 z-10 flex items-end bg-white px-5 pb-4 sm:px-8 sm:pb-6 lg:px-12 lg:pb-8 ${TITLE_BAR_CLASS}`}
-      >
+      <div className="bg-white px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
         <h2 className="text-xl font-bold text-[#121111] sm:text-2xl lg:text-3xl">Projetos</h2>
       </div>
       {projects.map((project, index) => (

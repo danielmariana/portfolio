@@ -39,20 +39,23 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`fixed inset-x-5 top-5 z-30 grid grid-cols-3 items-center rounded-xl px-5 py-3 text-sm font-bold tracking-[0.01em] transition-[background-color,box-shadow,backdrop-filter] duration-300 ease-out sm:inset-x-8 sm:top-8 lg:inset-x-12 lg:top-12 ${
+      className={`fixed inset-x-5 top-5 z-30 grid grid-cols-[1fr_auto_1fr] items-center rounded-xl px-5 py-3 text-sm font-bold tracking-[0.01em] transition-[background-color,box-shadow,backdrop-filter] duration-300 ease-out sm:inset-x-8 sm:top-8 sm:grid-cols-3 lg:inset-x-12 lg:top-12 ${
         scrolled
           ? 'bg-[#FAFAFA]/30 shadow-[0_2px_10px_rgba(0,0,0,0.06)] backdrop-blur-[6px]'
           : 'bg-transparent shadow-[0_2px_10px_rgba(0,0,0,0)] backdrop-blur-none'
       }`}
     >
-      <Link className="justify-self-start transition-opacity hover:opacity-50" to="/side-b">
+      <Link
+        className="min-w-0 justify-self-start transition-opacity hover:opacity-50"
+        to="/side-b"
+      >
         side b
       </Link>
       <Link className="justify-self-center" to="/">
-        <img className="block h-5 w-auto" src={logo} alt="Mariana" />
+        <img className="block h-4 w-auto sm:h-5" src={logo} alt="Mariana" />
       </Link>
       <a
-        className="gradient-cta justify-self-end rounded-lg px-4 py-2"
+        className="gradient-cta min-w-0 justify-self-end rounded-lg px-1.5 py-1.5 text-[10px] whitespace-nowrap sm:px-4 sm:py-2 sm:text-sm"
         href="#"
         target="_blank"
         rel="noreferrer"
